@@ -85,7 +85,7 @@ from src.services.security import (
 )
 from src.services.audit import log_action
 from .common import page_heading
-from .components import art_svg, empty_state, esc, fmt_date, money, page_link, rating_summary, status_badge
+from .components import art_svg, empty_state, esc, fmt_date, page_link, rating_summary, status_badge
 
 ADMIN_SECTIONS = [
     ("dashboard", "Tableau de bord"),
