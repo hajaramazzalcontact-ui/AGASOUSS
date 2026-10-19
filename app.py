@@ -14,7 +14,7 @@ from sqlalchemy import func, select
 
 from src.config import APP_EDITOR, APP_NAME, IS_DEMO
 from src.db.models import Cart, CartItem
-from src.db.session import configure_database, get_session
+from src.db.session import configure_database, get_session, init_database
 from src.i18n import LANGUAGES, direction, locale_name, t
 from src.ui.components import esc, page_link
 from src.ui.theme import inject_theme
@@ -70,6 +70,18 @@ def _init_session() -> None:
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
+
+
+@st.cache_resource(show_spinner="Préparation de la base…")
+def _setup_database() -> None:
+    """Garantit le schéma et, en mode DÉMO, les données fictives.
+
+    Sur un déploiement neuf (Streamlit Community Cloud), la base locale
+    n'est pas versionnée par Git : sans cette étape, les requêtes
+    échouent avec « no such table ». Exécutée une seule fois par process.
+    """
+    configure_database()
+    init_database()
 
 
 def _cart_count() -> int:
@@ -192,7 +204,9 @@ def main() -> None:
         initial_sidebar_state="collapsed",
     )
     _init_session()
-    configure_database()
+    _setup_database()
+
+    locale = st.session_state.get("lang", "fr")
 
     locale = st.session_state.get("lang", "fr")
     rtl = direction(locale) == "rtl"
