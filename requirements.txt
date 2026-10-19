@@ -1,0 +1,20 @@
+# Azul AGADIR — dépendances
+# Installation : pip install -r requirements.txt
+# Lancement    : streamlit run app.py
+
+streamlit>=1.37
+pandas>=2.0
+plotly>=5.18
+SQLAlchemy>=2.0
+folium>=0.15
+streamlit-folium>=0.18
+qrcode[pil]>=7.4
+cryptography>=42
+fpdf2>=2.7
+python-dotenv>=1.0
+requests>=2.31
+Pillow>=10
+pytest>=8
+
+# IA optionnelle : sans clé, l'application utilise ses moteurs locaux.
+anthropic>=0.40
