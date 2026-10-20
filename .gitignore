@@ -1,14 +1,80 @@
-# Données locales et secrets
-data/*.db
-data/*.db-*
-data/.secret.key
-data/uploads/*
-!data/uploads/.gitkeep
-data/backups/*
-!data/backups/.gitkeep
-.env
-.streamlit/secrets.toml
+# Python
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Streamlit
+.streamlit/
+streamlit_secrets.toml
+.streamlit_cache/
+
+# Bäse de données
+*.db
+*.sqlite
+*.sqlite3
+azul_agadir.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Temporary
+tmp/
+temp/
+*.tmp
+
+# OS
+.DS_Store
+Thumbs.db
+.DS_Store?
+
+# Tests
 .pytest_cache/
-.venv/
+.coverage
+htmlcov/
+
+# Secrets
+.streamlit/secrets.toml
+certs/
+*.pem
+
+# Node (si frontend later)
+node_modules/
+npm-debug.log
+
+# Production builds
+dist/
+build/

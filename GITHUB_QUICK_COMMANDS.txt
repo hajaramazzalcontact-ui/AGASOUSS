@@ -1,0 +1,164 @@
+════════════════════════════════════════════════════════════════════════════════
+🚀 GITHUB + STREAMLIT CLOUD - COMMANDES RAPIDES À COPIER-COLLER
+════════════════════════════════════════════════════════════════════════════════
+
+⚠️ AVANT DE COMMENCER :
+
+1. Installer Git : https://git-scm.com/download/win
+2. Créer un compte GitHub : https://github.com (gratuit)
+3. Créer un repository GitHub vide (ne pas initialiser README)
+4. Avoir la clé ANTHROPIC_API_KEY prête
+
+
+════════════════════════════════════════════════════════════════════════════════
+📋 ÉTAPE 1 : CONFIGURATION GIT LOCAL
+════════════════════════════════════════════════════════════════════════════════
+
+Ouvrir PowerShell ou Git Bash dans le dossier azul-agadir :
+
+cd C:\Users\vams\Documents\Projet\ par\ défaut\azul-agadir
+
+
+════════════════════════════════════════════════════════════════════════════════
+🔧 ÉTAPE 2 : INITIALISER LE REPOSITORY LOCAL
+════════════════════════════════════════════════════════════════════════════════
+
+COPIER-COLLER CES COMMANDES :
+
+git init
+
+git config user.name "AgadirGO"
+git config user.email "dev@azulagadir.ma"
+
+git add .
+
+git commit -m "Initial commit: AZUL AGADIR - Application touristique complète"
+
+
+════════════════════════════════════════════════════════════════════════════════
+🌐 ÉTAPE 3 : POUSSER VERS GITHUB
+════════════════════════════════════════════════════════════════════════════════
+
+REMPLACER "hajaramazzalcontact-ui" PAR VOTRE USERNAME GITHUB :
+
+git remote add origin https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git
+
+git branch -M main
+
+git push -u origin main
+
+[Git vous demandera votre username et password/token GitHub]
+
+
+════════════════════════════════════════════════════════════════════════════════
+✅ VÉRIFIER LE RÉSULTAT
+════════════════════════════════════════════════════════════════════════════════
+
+Ouvrir : https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR
+
+Vous devez voir :
+- Tous les fichiers Python
+- Tous les fichiers documentation
+- SAUF : .env et *.db (ils sont dans .gitignore)
+
+
+════════════════════════════════════════════════════════════════════════════════
+🚀 ÉTAPE 4 : DÉPLOYER SUR STREAMLIT CLOUD
+════════════════════════════════════════════════════════════════════════════════
+
+1. Aller sur : https://streamlit.io/cloud
+
+2. Se connecter avec GitHub (Sign in with GitHub)
+
+3. Cliquer "Create app"
+
+4. Remplir :
+   Repository : hajaramazzalcontact-ui/AZUL-AGADIR
+   Branch : main
+   Main file path : app.py
+
+5. Cliquer "Deploy"
+
+⏳ Attendre 2-3 minutes...
+
+✅ L'app s'affiche !
+
+
+════════════════════════════════════════════════════════════════════════════════
+🔐 ÉTAPE 5 : CONFIGURER LES SECRETS
+════════════════════════════════════════════════════════════════════════════════
+
+1. Dans votre app Streamlit Cloud, cliquer ⚙️ Settings
+
+2. Cliquer "Secrets"
+
+3. Coller EXACTEMENT ceci :
+
+ANTHROPIC_API_KEY = "sk-ant-votre-clé-API-ici"
+DATABASE_URL = "sqlite:///azul_agadir.db"
+ENVIRONMENT = "production"
+
+4. Cliquer "Save"
+
+5. L'app redémarrera automatiquement ✓
+
+
+════════════════════════════════════════════════════════════════════════════════
+🎉 RÉSULTAT FINAL
+════════════════════════════════════════════════════════════════════════════════
+
+Repository GitHub :
+https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR
+
+App en ligne :
+https://azul-agadir.streamlit.app
+
+OU (si URL personnalisée) :
+https://hajaramazzalcontact-ui-azul-agadir.streamlit.app
+
+
+════════════════════════════════════════════════════════════════════════════════
+📝 POUR FAIRE DES MISES À JOUR PLUS TARD
+════════════════════════════════════════════════════════════════════════════════
+
+Après modifier des fichiers :
+
+git add .
+git commit -m "Description de la modification"
+git push
+
+Streamlit redéploiera automatiquement !
+
+
+════════════════════════════════════════════════════════════════════════════════
+🆘 SI ERREUR : "fatal: origin already exists"
+════════════════════════════════════════════════════════════════════════════════
+
+git remote remove origin
+git remote add origin https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git
+git push -u origin main
+
+
+════════════════════════════════════════════════════════════════════════════════
+🆘 SI ERREUR : "Permission denied (publickey)"
+════════════════════════════════════════════════════════════════════════════════
+
+Utiliser un Personal Access Token à la place du password :
+
+1. GitHub Settings → Developer settings → Personal access tokens
+2. Generate new token (classic)
+3. Cocher : repo, read:user, user:email
+4. Copier le token
+5. Quand Git demande password, coller le token
+
+
+════════════════════════════════════════════════════════════════════════════════
+✨ BRAVO ! Votre app AZUL AGADIR est en ligne ! 🌊
+════════════════════════════════════════════════════════════════════════════════
+
+Code source : https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR
+App en ligne : https://azul-agadir.streamlit.app
+
+Questions ? Voir GITHUB_STREAMLIT_GUIDE.md pour plus de détails
+
+Bon développement ! 🚀

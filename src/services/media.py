@@ -7,7 +7,7 @@ from pathlib import Path
 from PIL import Image
 from sqlalchemy.orm import Session
 
-from src.config import UPLOAD_DIR
+from src.config import BASE_DIR
 from src.db.base import utcnow
 from src.db.models import CatalogMedia
 
@@ -50,7 +50,8 @@ def save_image(
     # Miniature compressée et version d'affichage raisonnable.
     max_side = 1600
     image.thumbnail((max_side, max_side), Image.Resampling.LANCZOS)
-    folder = UPLOAD_DIR / "catalog" / str(catalog_id)
+    # Dossier servi par Streamlit sur /app/static/media/... : affichage rapide.
+    folder = BASE_DIR / "static" / "media" / "uploads" / str(catalog_id)
     folder.mkdir(parents=True, exist_ok=True)
     suffix = ".jpg"
     base = f"{utcnow().strftime('%Y%m%d%H%M%S')}-{sort_order}"

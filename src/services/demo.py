@@ -21,3 +21,14 @@ def reset_demo_database() -> None:
                 raise RuntimeError(f"Impossible de supprimer {path}: {exc}") from exc
     configure_database()
     init_database(seed=True)
+    if IS_DEMO:
+        # Re-illustration des fiches après un reset (silencieux sans réseau).
+        session = get_session()
+        try:
+            from src.services.photos import apply_real_photos
+            apply_real_photos(session)
+            session.commit()
+        except Exception:
+            session.rollback()
+        finally:
+            session.close()

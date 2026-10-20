@@ -181,3 +181,67 @@ def test_customer_export_and_anonymize(s):
     refreshed = s.get(Customer, customer.id)
     assert refreshed.anonymized_at is not None
     s.rollback()
+
+
+# ---------------------------------------------------------------------------- photos
+def test_photo_license_filter():
+    from src.services import photos
+    assert photos._license_ok("CC BY-SA 4.0")
+    assert photos._license_ok("CC BY 2.0")
+    assert photos._license_ok("CC0")
+    assert photos._license_ok("Public domain")
+    assert not photos._license_ok("CC BY-NC 4.0")
+    assert not photos._license_ok("CC BY-ND 4.0")
+    assert not photos._license_ok("GFDL")
+    assert not photos._license_ok("")
+
+
+def test_harvest_item_creates_gallery_with_credits(s, monkeypatch):
+    """La récolte crée des photos, une seule couverture et des crédits."""
+    from src.db.models import CatalogItem
+    from src.services import photos
+    from src.ui.components import media_items, render_gallery
+
+    item = CatalogItem(
+        kind="activity", slug="test-photo-tmp", status="published",
+        name={"fr": "Fiche test photos"}, is_demo=True,
+    )
+    s.add(item)
+    s.flush()
+
+    def fake_candidates(term, cache, limit=20):
+        return [{
+            "external_url": f"https://example.org/{term.replace(' ', '_')}.jpg",
+            "source_url": "https://example.org/source",
+            "credit": "Auteur test",
+            "license_name": "CC BY 4.0",
+            "sha1": f"sha-{term}",
+        }]
+
+    monkeypatch.setattr(photos, "_fetch_candidates", fake_candidates)
+    monkeypatch.setattr(
+        photos, "_download",
+        lambda url, slug, key: (
+            f"/app/static/media/{slug}/{key}.jpg",
+            f"/app/static/media/{slug}/t_{key}.jpg",
+        ),
+    )
+    monkeypatch.setattr(photos, "_save_cache", lambda cache: None)
+
+    added = photos.harvest_item(s, item, target=3, download=True)
+    s.flush()
+    assert added == 3
+    rows = sorted(item.media, key=lambda m: m.sort_order)
+    assert sum(1 for m in rows if m.is_cover) == 1
+
+    photos_list = media_items(item)
+    assert photos_list
+    assert photos_list[0]["src"].startswith("/app/static/media/")
+    assert photos_list[0]["fallback"].startswith("https://example.org/")
+
+    html = render_gallery(item, "fr")
+    assert "Crédits photos" in html
+    assert "CC BY 4.0" in html
+
+    s.delete(item)
+    s.commit()

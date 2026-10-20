@@ -85,7 +85,7 @@ from src.services.security import (
 )
 from src.services.audit import log_action
 from .common import page_heading
-from .components import art_svg, empty_state, esc, fmt_date, page_link, rating_summary, status_badge
+from .components import art_svg, empty_state, esc, fmt_date, page_link, rating_summary, render_gallery, show_html, status_badge
 
 ADMIN_SECTIONS = [
     ("dashboard", "Tableau de bord"),
@@ -136,7 +136,7 @@ def _login(s, locale: str) -> None:
                 st.error(str(exc))
     if IS_DEMO:
         st.info(t("demo_login", locale) + " · rôles : manager@azul.local, provider@azul.local, même mot de passe DÉMO.", icon="🔐")
-    st.markdown(f'<p style="text-align:center;margin-top:18px"><a href="{page_link("accueil")}">← Retour au site visiteur</a></p>', unsafe_allow_html=True)
+    st.markdown(f'<p style="text-align:center;margin-top:18px"><a target="_self" href="{page_link("accueil")}">← Retour au site visiteur</a></p>', unsafe_allow_html=True)
 
 
 def _admin_header(user: User) -> None:
@@ -155,7 +155,7 @@ def _admin_header(user: User) -> None:
         <div class="az-lesstext" style="margin-top:4px">{esc(user.full_name)} · {esc(ROLE_LABELS.get(user.role, user.role))} · {esc(user_email(user))}</div>
       </div>
       <div class="az-chip-row">
-        <a class="az-chip" href="{page_link("accueil")}">← Site visiteur</a>
+        <a target="_self" class="az-chip" href="{page_link("accueil")}">← Site visiteur</a>
         <span class="az-chip active">DÉMO</span>
       </div>
     </div>
@@ -168,7 +168,7 @@ def _admin_header(user: User) -> None:
             st.query_params["page"] = "accueil"
             st.rerun()
     nav = "".join(
-        f'<a class="{"active" if key == current else ""}" href="{page_link("admin", section=key)}">{esc(label)}</a>'
+        f'<a target="_self" class="{"active" if key == current else ""}" href="{page_link("admin", section=key)}">{esc(label)}</a>'
         for key, label in sections
     )
     st.markdown(f'<div class="az-admin-nav">{nav}</div>', unsafe_allow_html=True)
@@ -447,7 +447,18 @@ def _catalogue(s, user: User, locale: str) -> None:
         if media_items:
             item_id = st.selectbox("Fiche", [i.id for i in media_items], format_func=lambda x: next(localized(i.name, "fr") for i in media_items if i.id == x), key="media_item")
             item = s.get(CatalogItem, item_id)
-            st.markdown(f'<div style="max-width:340px;border-radius:18px;overflow:hidden">{art_svg(item, 1)}</div>', unsafe_allow_html=True)
+            photos = [
+                m for m in (item.media or [])
+                if getattr(m, "external_url", None) or (getattr(m, "storage_path", "") or "")
+            ]
+            st.caption(f"{len(photos)} visuel(s) enregistré(s) pour cette fiche.")
+            if photos:
+                st.markdown(
+                    f'<div style="border-radius:18px;overflow:hidden;max-width:760px">{render_gallery(item, "fr")}</div>',
+                    unsafe_allow_html=True,
+                )
+            else:
+                show_html(f'<div style="max-width:340px;border-radius:18px;overflow:hidden">{art_svg(item, 1)}</div>')
             upload = st.file_uploader("Ajouter une image", type=["jpg", "jpeg", "png", "webp"])
             c1, c2 = st.columns(2)
             with c1:

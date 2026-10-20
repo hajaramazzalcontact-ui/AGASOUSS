@@ -386,26 +386,35 @@ html[dir="rtl"] .az-hero::after { background: linear-gradient(270deg, rgba(6,20,
 html[dir="rtl"] .az-nav { direction: rtl; }
 html[dir="rtl"] .az-utility { direction: rtl; }
 html[dir="rtl"] .az-price, html[dir="rtl"] .az-card-kind { direction: ltr; }
+
+/* ------------------------------------------------------------- réelles */
+.az-cover, .az-detail-art, .az-gallery div { position: relative; }
+.az-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+.az-gallery div { transition: transform .35s ease, box-shadow .35s ease; }
+.az-gallery div:hover { transform: translateY(-2px); box-shadow: var(--azul-shadow-soft); }
+.az-badge.photos { background: rgba(11, 31, 58, .78); color: #fff; }
+.az-media-credits {
+  margin: -14px 0 28px; padding: 10px 14px; border: 1px solid var(--azul-line);
+  border-radius: 14px; background: var(--azul-surface); font-size: .68rem; color: var(--azul-muted);
+}
+.az-media-credits summary { cursor: pointer; font-weight: 700; color: var(--azul-night); }
+.az-media-credits .hint { margin: 8px 0; }
+.az-media-credits ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 3px; }
+.az-media-credits a { color: var(--azul-ocean); }
 """
 
 
 def inject_theme(dark: bool = False, rtl: bool = False) -> None:
     theme = "dark" if dark else "light"
-    direction = "rtl" if rtl else "ltr"
     st.markdown(
         f"""<style>
         html {{ --azul-mode: {theme}; }}
-        html[data-azul-theme="{theme}"] {{ }}
         {BASE_CSS}
-        </style>
-        <script>
-          document.documentElement.setAttribute('data-azul-theme', '{theme}');
-          document.documentElement.setAttribute('dir', '{direction}');
-        </script>
-        """,
+        </style>""",
         unsafe_allow_html=True,
     )
-    # Streamlit peut filtrer le script ; on applique aussi les variables en clair.
+    # Streamlit n'exécute pas les scripts intégrés : le thème et la direction
+    # sont appliqués uniquement en CSS, sans attribut posé par script.
     if dark:
         st.markdown(
             """<style>
@@ -421,6 +430,12 @@ def inject_theme(dark: bool = False, rtl: bool = False) -> None:
         )
     if rtl:
         st.markdown(
-            """<style>html, body, .stApp { direction: rtl; } .az-topbar, .az-nav, .az-utility { direction: rtl; }</style>""",
+            """<style>
+            html, body, .stApp { direction: rtl; }
+            .az-topbar, .az-nav, .az-utility { direction: rtl; }
+            .az-hero-copy, .az-card-body, .az-detail-copy, .az-review,
+            .az-note, .az-day, .az-day-head, .az-section-head { text-align: right; }
+            .az-price, .az-card-kind { direction: ltr; }
+            </style>""",
             unsafe_allow_html=True,
         )

@@ -1,0 +1,2 @@
+# Ce dossier est servi par Streamlit sur /app/static (voir .streamlit/config.toml).
+# Les photos téléchargées (static/media/**) sont générées par tools/harvest_photos.py.

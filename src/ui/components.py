@@ -156,13 +156,108 @@ def demo_badge() -> str:
     return '<span class="az-badge demo">DÉMO</span>'
 
 
+def show_html(markup: str) -> None:
+    """Rendu HTML direct.
+
+    Streamlit interprète certains blocs riches (SVG, cartes) comme du code
+    lorsqu'ils passent par st.markdown : le contournement fiable est
+    st.html(), avec repli sur st.markdown si l'API n'est pas disponible.
+    """
+    if hasattr(st, "html"):
+        st.html(markup)
+    else:
+        st.markdown(markup, unsafe_allow_html=True)
+
+
+def _media_rows(item) -> list:
+    """Médias d'une fiche, image de couverture en premier."""
+    try:
+        return sorted(
+            getattr(item, "media", None) or [],
+            key=lambda m: (not bool(getattr(m, "is_cover", False)),
+                           int(getattr(m, "sort_order", 0) or 0),
+                           int(getattr(m, "id", 0) or 0)),
+        )
+    except Exception:
+        return []
+
+
+def _local_path(media, thumb: bool = False) -> str:
+    """Chemin local servi par Streamlit, s'il existe."""
+    for attr in (("thumbnail_path", "storage_path") if thumb else ("storage_path", "thumbnail_path")):
+        value = getattr(media, attr, None)
+        if not value:
+            continue
+        text = str(value).replace("\\", "/")
+        if text.startswith("/app/static"):
+            return text
+        if text.startswith("static/"):
+            return "/app/" + text
+    return ""
+
+
+def media_items(item, thumb: bool = False) -> list[dict]:
+    """Photos d'une fiche : source locale prioritaire, URL distante en secours."""
+    rows = []
+    for media in _media_rows(item):
+        external = getattr(media, "external_url", None)
+        local = _local_path(media, thumb=thumb)
+        src = local or external
+        if not src:
+            continue
+        rows.append({
+            "src": src,
+            "fallback": external if local else "",
+            "credit": getattr(media, "credit", None),
+            "license": getattr(media, "license_name", None),
+            "source": getattr(media, "source_url", None),
+            "caption": getattr(media, "caption", None) or {},
+            "map": local or "",
+        })
+    return rows
+
+
+def item_media_urls(item) -> list[str]:
+    """URLs affichables d'une fiche, image de couverture en premier."""
+    if item is None:
+        return []
+    urls: list[str] = []
+    for row in media_items(item):
+        if row["src"] not in urls:
+            urls.append(row["src"])
+    return urls
+
+
+def media_img(item, index: int = 0, thumb: bool = False) -> str:
+    """Photo réelle superposée à l'art SVG (l'art reste visible si l'image échoue)."""
+    rows = media_items(item, thumb=thumb)
+    if index >= len(rows):
+        return ""
+    row = rows[index]
+    caption = localized(row.get("caption") or {}, "fr") if row.get("caption") else ""
+    label = localized(getattr(item, "name", {}) or {}, "fr") if item is not None else ""
+    alt = f"{label} — {caption}" if caption else label
+    fallback = row.get("fallback") or ""
+    onerror = (
+        f"onerror=\"if(this.dataset.f){{this.remove()}}else{{this.dataset.f='1';this.src='{esc(fallback)}'}}\""
+        if fallback else 'onerror="this.remove()"'
+    )
+    return f'<img class="az-media" src="{esc(row["src"])}" alt="{esc(alt)}" loading="lazy" decoding="async" {onerror} />'
+
+
 def item_card(item, locale: str = "fr", show_demo: bool = True) -> str:
     name = esc(localized(item.name, locale))
     desc = esc(localized(item.short_description, locale))
     kind = esc(localized(KIND_WORD.get(item.kind, {}), locale))
-    price = esc(_price_label(item, locale))
+    if item.price_from is None:
+        price = esc(_price_label(item, locale))
+    else:
+        unit = esc(price_unit_label(item.price_unit, locale))
+        demo = " (DÉMO)" if item.price_status == "demo" else ""
+        price = f"dès {esc(money(item.price_from))}{demo}<small>{unit}</small>"
     rating = float(item.rating_avg or 0)
     count = int(item.review_count or 0)
+    photo_count = len(media_items(item))
     badges = ""
     if show_demo:
         badges += demo_badge()
@@ -170,15 +265,17 @@ def item_card(item, locale: str = "fr", show_demo: bool = True) -> str:
         badges += '<span class="az-badge popular">Populaire</span>'
     if "famille" in (item.vibes or []):
         badges += '<span class="az-badge family">Idéal famille</span>'
+    if photo_count:
+        badges += f'<span class="az-badge photos">📷 {photo_count}</span>'
     rating_html = (
         f'<div class="az-rating-line"><span class="az-stars">{stars(rating)}</span> '
         f'<b>{rating:.1f}</b><span>· {count} {t("reviews", locale)}</span></div>'
         if count else '<div class="az-rating-line"><span class="az-stars">★★★★★</span><span>Nouveau</span></div>'
     )
     return f"""
-    <a class="az-card" href="{item_link(item)}">
+    <a target="_self" class="az-card" href="{item_link(item)}">
       <div class="az-cover">
-        {art_svg(item)}
+        {art_svg(item)}{media_img(item, 0, thumb=True)}
         <div class="badge">{badges}</div>
       </div>
       <div class="az-card-body">
@@ -211,7 +308,7 @@ def item_grid(items, locale: str = "fr", columns: int = 3) -> None:
         cols = st.columns(columns, gap="medium")
         for col, item in zip(cols, items[index:index + columns]):
             with col:
-                st.markdown(item_card(item, locale), unsafe_allow_html=True)
+                show_html(item_card(item, locale))
 
 
 def review_card(review, locale: str = "fr", show_item: bool = False) -> str:
@@ -283,7 +380,7 @@ def vibe_tiles(locale: str = "fr") -> str:
     cells = []
     for key, icon in icons.items():
         label = labels[key][idx]
-        cells.append(f'<a class="az-vibe" href="{page_link("decouvrir", vibe=key)}"><span class="ico">{icon}</span><b>{esc(label)}</b><span>{esc(sub.get(locale, ""))}</span></a>')
+        cells.append(f'<a target="_self" class="az-vibe" href="{page_link("decouvrir", vibe=key)}"><span class="ico">{icon}</span><b>{esc(label)}</b><span>{esc(sub.get(locale, ""))}</span></a>')
     return f'<div class="az-vibes">{"".join(cells)}</div>'
 
 
@@ -347,8 +444,8 @@ def hero(locale: str, greeting_name: str | None, weather: dict, counts: dict) ->
         <h1>{esc(t("welcome", locale))}{name}</h1>
         <p>{esc(t("hero_sub", locale))}</p>
         <div class="az-hero-actions">
-          <a class="az-btn primary" href="{page_link('decouvrir')}">{esc(t('explore', locale))} →</a>
-          <a class="az-btn ghost" href="{page_link('itinerary')}">{esc(t('plan', locale))} ✦</a>
+          <a target="_self" class="az-btn primary" href="{page_link('decouvrir')}">{esc(t('explore', locale))} →</a>
+          <a target="_self" class="az-btn ghost" href="{page_link('itinerary')}">{esc(t('plan', locale))} ✦</a>
         </div>
         <div class="az-hero-weather">
           <div class="az-weather-pill"><span>{esc(t('weather', locale))}</span><b>{esc(weather.get('summary') or t('weather_unavailable', locale))}</b></div>
@@ -406,7 +503,7 @@ def animated_counters(counts: dict, locale: str = "fr") -> None:
 
 
 def section_head(kicker: str, title: str, subtitle: str = "", link_label: str = "", link_href: str = "") -> str:
-    link = f'<a class="az-link" href="{link_href}">{esc(link_label)} →</a>' if link_label and link_href else ""
+    link = f'<a target="_self" class="az-link" href="{link_href}">{esc(link_label)} →</a>' if link_label and link_href else ""
     return f"""
     <div class="az-section-head">
       <div><span class="az-kicker">{esc(kicker)}</span><h2>{esc(title)}</h2>{f'<p>{esc(subtitle)}</p>' if subtitle else ''}</div>
@@ -416,7 +513,7 @@ def section_head(kicker: str, title: str, subtitle: str = "", link_label: str = 
 
 
 def empty_state(icon: str, title: str, text: str = "", action: str = "", href: str = "") -> None:
-    cta = f'<p style="margin-top:16px"><a class="az-btn primary" href="{href}">{esc(action)}</a></p>' if action and href else ""
+    cta = f'<p style="margin-top:16px"><a target="_self" class="az-btn primary" href="{href}">{esc(action)}</a></p>' if action and href else ""
     st.markdown(
         f'<div class="az-empty"><div class="ico">{icon}</div><h3>{esc(title)}</h3><p>{esc(text)}</p>{cta}</div>',
         unsafe_allow_html=True,
@@ -431,9 +528,47 @@ def status_badge(status: str) -> str:
     return f'<span class="az-status {esc(status)}">{esc(labels.get(status, status))}</span>'
 
 
-def gallery(item, locale: str = "fr") -> str:
-    variants = [art_svg(item, i) for i in range(5)]
-    return f'<div class="az-gallery">{"".join(f"<div>{v}</div>" for v in variants)}</div>'
+def gallery(item, locale: str = "fr", slots_count: int = 8) -> str:
+    """Grille de photos : couverture + galerie, avec art généré en secours."""
+    rows = media_items(item)
+    count = max(5, min(slots_count, len(rows) + 2))
+    slots = []
+    for index in range(count):
+        slots.append(f"<div>{art_svg(item, index)}{media_img(item, index)}</div>")
+    return f'<div class="az-gallery">{"".join(slots)}</div>'
+
+
+def media_credits(item, locale: str = "fr") -> str:
+    """Crédits, licences et pages source — obligatoires pour toute photo."""
+    rows = media_items(item)
+    if not rows:
+        return ""
+    entries = []
+    for index, row in enumerate(rows[:12], start=1):
+        credit = esc(row.get("credit") or "Crédit non renseigné")
+        license_name = esc(row.get("license") or "Licence libre")
+        source = row.get("source") or ""
+        link = (
+            f'<a href="{esc(source)}" target="_blank" rel="noopener nofollow">source</a>'
+            if source else ""
+        )
+        entries.append(
+            f"<li><b>Photo {index}</b> — {credit} · {license_name} {link}</li>"
+        )
+    return f"""
+    <details class="az-media-credits">
+      <summary>Crédits photos et licences ({len(rows)})</summary>
+      <p class="hint">Photos d'illustration issues de Wikimedia Commons, sous licence libre
+      (CC BY, CC BY-SA, CC0 ou domaine public). Elles illustrent le type d'expérience ou de
+      lieu et ne représentent pas nécessairement l'établissement exact (données DÉMO).</p>
+      <ul>{"".join(entries)}</ul>
+    </details>
+    """
+
+
+def render_gallery(item, locale: str = "fr") -> str:
+    """Bloc galerie complet, crédits inclus, pour les fiches détaillées."""
+    return gallery(item, locale) + media_credits(item, locale)
 
 
 def confetti() -> None:
@@ -459,10 +594,10 @@ def render_footer(locale: str = "fr") -> None:
       <div><div class="brand">AZUL AGADIR</div><div>par AgadirGO · Porte d'entrée du tourisme à Agadir, Taghazout et alentours.</div>
       <div style="margin-top:6px">© 2026 AgadirGO — application de démonstration.</div></div>
       <div style="display:flex;gap:16px;flex-wrap:wrap">
-        <a href="{page_link('legal', doc='cgu')}">Conditions générales</a>
-        <a href="{page_link('legal', doc='privacy')}">Confidentialité (loi 09-08)</a>
-        <a href="{page_link('legal', doc='cookies')}">Cookies</a>
-        <a href="{page_link('admin')}">Espace pro</a>
+        <a target="_self" href="{page_link('legal', doc='cgu')}">Conditions générales</a>
+        <a target="_self" href="{page_link('legal', doc='privacy')}">Confidentialité (loi 09-08)</a>
+        <a target="_self" href="{page_link('legal', doc='cookies')}">Cookies</a>
+        <a target="_self" href="{page_link('admin')}">Espace pro</a>
       </div>
       <div style="max-width:360px">Aucun paiement en ligne n'est activé en V1. Les prix et horaires de démonstration sont fictifs et ne doivent pas être utilisés comme information réelle.</div>
     </div>

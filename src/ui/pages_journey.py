@@ -52,6 +52,7 @@ from .components import (
     rating_summary,
     review_card,
     section_head,
+    show_html,
     stars,
     status_badge,
 )
@@ -155,7 +156,7 @@ def render_itinerary(locale: str) -> None:
                 <div class="az-day-item">
                   <div class="az-day-time">{esc(item.get('start_time', '—'))}</div>
                   <div style="flex:1">
-                    <b><a href="{page_link('decouvrir' if cat.kind == 'activity' else ('restaurants' if cat.kind == 'restaurant' else 'transport'), item=cat.slug)}">{esc(localized(cat.name, locale))}</a></b>
+                    <b><a target="_self" href="{page_link('decouvrir' if cat.kind == 'activity' else ('restaurants' if cat.kind == 'restaurant' else 'transport'), item=cat.slug)}">{esc(localized(cat.name, locale))}</a></b>
                     <small>{esc(item.get('end_time', ''))} · {esc(price_txt)}</small>
                   </div>
                 </div>
@@ -181,8 +182,8 @@ def render_itinerary(locale: str) -> None:
 
         st.markdown(f"""
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 4px">
-          <a class="az-btn primary" href="{page_link('cart')}">Voir le panier</a>
-          <a class="az-chip" href="{page_link('decouvrir')}">Ajouter une activité</a>
+          <a target="_self" class="az-btn primary" href="{page_link('cart')}">Voir le panier</a>
+          <a target="_self" class="az-chip" href="{page_link('decouvrir')}">Ajouter une activité</a>
         </div>
         """, unsafe_allow_html=True)
         if st.button(t("book_plan", locale), type="primary", use_container_width=True):
@@ -275,9 +276,9 @@ def _show_booking_confirmation(s, booking: Booking, locale: str) -> None:
         st.info("Le billet sera émis après confirmation humaine de la réservation.")
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown(f'<a class="az-btn primary" href="{page_link("account")}">Voir mon espace →</a>', unsafe_allow_html=True)
+        st.markdown(f'<a target="_self" class="az-btn primary" href="{page_link("account")}">Voir mon espace →</a>', unsafe_allow_html=True)
     with c2:
-        st.markdown(f'<a class="az-chip" href="{page_link("decouvrir")}">Continuer à explorer</a>', unsafe_allow_html=True)
+        st.markdown(f'<a target="_self" class="az-chip" href="{page_link("decouvrir")}">Continuer à explorer</a>', unsafe_allow_html=True)
     with c3:
         if st.button("Nouveau panier", use_container_width=True):
             st.session_state.last_booking_id = None
@@ -303,7 +304,7 @@ def render_cart(locale: str) -> None:
         for line in list(cart.items):
             c1, c2 = st.columns([6, 1])
             with c1:
-                st.markdown(_cart_line_html(line, locale), unsafe_allow_html=True)
+                show_html(_cart_line_html(line, locale))
             with c2:
                 st.write("")
                 if st.button("✕", key=f"remove_{line.id}", help=t("remove", locale)):
@@ -475,7 +476,7 @@ def render_account(locale: str) -> None:
                 st.markdown(f"""
                 <div class="az-note" style="margin-bottom:8px">
                   {status_badge(booking.status)} <b>{esc(booking.reference)}</b> · {esc(items)}<br>
-                  Ramassage / heure : à confirmer la veille · <a href="{page_link('account')}">Voir le billet</a>
+                  Ramassage / heure : à confirmer la veille · <a target="_self" href="{page_link('account')}">Voir le billet</a>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -586,7 +587,7 @@ def render_assistant(locale: str) -> None:
                 st.markdown(message["content"])
                 if message.get("sources"):
                     source_html = "".join(
-                        f'<a class="az-chip" href="{page_link("decouvrir" if src["kind"] == "activity" else ("restaurants" if src["kind"] == "restaurant" else "transport"), item=src["slug"])}">{esc(src["name"])}</a>'
+                        f'<a target="_self" class="az-chip" href="{page_link("decouvrir" if src["kind"] == "activity" else ("restaurants" if src["kind"] == "restaurant" else "transport"), item=src["slug"])}">{esc(src["name"])}</a>'
                         for src in message["sources"]
                     )
                     st.markdown(f'<div class="az-chip-row" style="margin-top:6px">{source_html}</div>', unsafe_allow_html=True)

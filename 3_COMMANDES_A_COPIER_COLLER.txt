@@ -1,0 +1,148 @@
+════════════════════════════════════════════════════════════════════════════════
+🚀 LES 3 COMMANDES À COPIER-COLLER DIRECTEMENT DANS POWERSHELL
+════════════════════════════════════════════════════════════════════════════════
+
+Avant de commencer :
+
+✅ Ouvrir PowerShell dans le dossier azul-agadir/
+✅ Avoir votre GitHub token (ou password) prêt
+✅ Avoir créé le repo vide sur GitHub
+
+
+════════════════════════════════════════════════════════════════════════════════
+COMMANDE 1 : Ajouter le remote GitHub
+════════════════════════════════════════════════════════════════════════════════
+
+Copier et coller EXACTEMENT ceci :
+
+git remote add origin https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git
+
+Appuyer sur ENTER
+
+(Rien ne s'affiche, c'est normal ✓)
+
+
+════════════════════════════════════════════════════════════════════════════════
+COMMANDE 2 : Renommer la branche en main
+════════════════════════════════════════════════════════════════════════════════
+
+Copier et coller EXACTEMENT ceci :
+
+git branch -M main
+
+Appuyer sur ENTER
+
+(Rien ne s'affiche, c'est normal ✓)
+
+
+════════════════════════════════════════════════════════════════════════════════
+COMMANDE 3 : POUSSER LE CODE SUR GITHUB
+════════════════════════════════════════════════════════════════════════════════
+
+Copier et coller EXACTEMENT ceci :
+
+git push -u origin main
+
+Appuyer sur ENTER
+
+⏳ ATTENDRE... (peut prendre 30 secondes)
+
+🔐 PowerShell demandera :
+
+Username for 'https://github.com': hajaramazzalcontact-ui
+
+→ Taper votre username GitHub et appuyer ENTER
+
+
+Password for 'https://hajaramazzalcontact-ui@github.com': 
+
+→ COLLER VOTRE TOKEN GITHUB (pas visible à l'écran, c'est normal)
+→ Appuyer ENTER
+
+Les caractères n'apparaissent pas ? C'est NORMAL !
+
+
+════════════════════════════════════════════════════════════════════════════════
+✅ RÉSULTAT ATTENDU
+════════════════════════════════════════════════════════════════════════════════
+
+Vous devez voir :
+
+Enumerating objects: XX, done.
+Counting objects: 100% (XX/XX)
+Delta compression using up to 8 threads
+Compressing objects: 100% (XX/XX)
+Writing objects: 100% (XX/XX)
+remote: Resolving deltas: 100% (XX/XX), done.
+To https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git
+ * [new branch]      main -> main
+Branch 'main' set up to track remote branch 'main' from 'origin'.
+
+✅ C'EST BON ! Le code est sur GitHub ! 🎉
+
+
+════════════════════════════════════════════════════════════════════════════════
+🔍 VÉRIFIER QUE ÇA MARCHE
+════════════════════════════════════════════════════════════════════════════════
+
+Copier-coller pour vérifier :
+
+git remote -v
+
+Vous devez voir :
+origin  https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git (fetch)
+origin  https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git (push)
+
+✅ C'est bon !
+
+
+════════════════════════════════════════════════════════════════════════════════
+🌐 VÉRIFIER SUR GITHUB
+════════════════════════════════════════════════════════════════════════════════
+
+Ouvrir : https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR
+
+Vous devez voir vos fichiers :
+✅ app.py
+✅ requirements.txt
+✅ data/
+✅ services/
+✅ ia/
+✅ etc.
+
+SAUF .env et *.db (c'est normal, ils ne doivent pas être là)
+
+✅ Si c'est là → SUCCÈS TOTAL ! 🎉
+
+
+════════════════════════════════════════════════════════════════════════════════
+🚀 PROCHAINE ÉTAPE : STREAMLIT CLOUD
+════════════════════════════════════════════════════════════════════════════════
+
+1. Aller sur https://streamlit.io/cloud
+
+2. "Sign in with GitHub"
+
+3. "Create app"
+   - Repository: hajaramazzalcontact-ui/AZUL-AGADIR
+   - Branch: main
+   - Main file: app.py
+   - "Deploy"
+
+4. Attendre 2-3 minutes
+
+5. Settings → Secrets
+   ANTHROPIC_API_KEY = "sk-ant-..."
+
+6. Save
+
+7. Voila ! App en ligne : https://azul-agadir.streamlit.app 🌊
+
+
+════════════════════════════════════════════════════════════════════════════════
+C'EST TOUT ! 🎉
+════════════════════════════════════════════════════════════════════════════════
+
+3 commandes, 2 minutes, et votre code est sur GitHub !
+
+Allez-y ! 🚀

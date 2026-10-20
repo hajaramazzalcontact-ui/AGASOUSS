@@ -1,0 +1,337 @@
+════════════════════════════════════════════════════════════════════════════════
+🚀 EXÉCUTER MAINTENANT - GUIDE ÉTAPE PAR ÉTAPE
+════════════════════════════════════════════════════════════════════════════════
+
+Vous voulez exécuter ces 3 commandes :
+
+git remote add origin https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git
+git branch -M main
+git push -u origin main
+
+Voici comment faire maintenant ! 👇
+
+
+════════════════════════════════════════════════════════════════════════════════
+✅ ÉTAPE 0 : PRÉALABLE (5 minutes avant)
+════════════════════════════════════════════════════════════════════════════════
+
+1. S'ASSURER QUE VOUS AVEZ GIT :
+
+   Ouvrir PowerShell ET taper :
+   
+   git --version
+
+   Si vous voyez : "git version X.X.X"
+   → Vous avez Git, continuez ! ✓
+   
+   Si vous voyez : "git: Le terme git n'est pas reconnu"
+   → Installer Git : https://git-scm.com/download/win
+   → Redémarrer PowerShell après installation
+   → Retester : git --version
+
+
+2. VÉRIFIER VOTRE RÉPERTOIRE GITHUB :
+
+   → Aller sur https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR
+   → Vérifier que le repo existe
+   → Vérifier que c'est VIDE (sans fichiers)
+   
+   Si le repo n'existe pas encore :
+   → Créer sur https://github.com/new
+   → Nom : AZUL-AGADIR
+   → Public : OUI
+   → NE PAS initialiser avec README
+   → Créer
+
+
+3. AVOIR VOTRE GITHUB TOKEN PRÊT :
+
+   → Aller sur https://github.com/settings/tokens
+   → "Generate new token" (classic)
+   → Nom : "AZUL AGADIR Push"
+   → Permissions : Cocher "repo" et "user:email"
+   → "Generate token"
+   → COPIER LE TOKEN (ressemble à ghp_xxxxxxxxxxxx)
+   → LE SAUVEGARDER QUELQUE PART
+
+
+════════════════════════════════════════════════════════════════════════════════
+🚀 ÉTAPE 1 : OUVRIR POWERSHELL DANS LE BON DOSSIER
+════════════════════════════════════════════════════════════════════════════════
+
+1. Ouvrir l'Explorateur Windows
+
+2. Naviguer à :
+   C:\Users\vams\Documents\Projet par défaut\azul-agadir
+
+3. Clic DROIT dans le dossier vide (pas sur un fichier)
+
+4. Cliquer "Open PowerShell here"
+
+   ATTENTION : Vous devez voir :
+   PS C:\Users\vams\Documents\Projet par défaut\azul-agadir>
+
+   Si vous avez un message d'erreur, essayez :
+   Clic droit → "Ouvrir avec Terminal"
+
+
+════════════════════════════════════════════════════════════════════════════════
+📋 ÉTAPE 2 : INITIALISER GIT (PREMIÈRE FOIS UNIQUEMENT)
+════════════════════════════════════════════════════════════════════════════════
+
+Si vous n'avez PAS encore lancé git init, faire :
+
+git init
+
+Vous devez voir :
+"Initialized empty Git repository in C:\Users\...\azul-agadir\.git"
+
+Si vous l'avez déjà fait, PASSER À L'ÉTAPE 3
+
+
+════════════════════════════════════════════════════════════════════════════════
+📋 ÉTAPE 3 : CONFIGURER GIT (PREMIÈRE FOIS UNIQUEMENT)
+════════════════════════════════════════════════════════════════════════════════
+
+Si vous n'avez PAS encore configuré Git, faire :
+
+git config user.name "AgadirGO"
+
+Puis :
+
+git config user.email "dev@azulagadir.ma"
+
+Pas de message ? C'est normal, c'est configuré ! ✓
+
+Si vous l'avez déjà fait, PASSER À L'ÉTAPE 4
+
+
+════════════════════════════════════════════════════════════════════════════════
+📋 ÉTAPE 4 : AJOUTER LES FICHIERS (PREMIÈRE FOIS UNIQUEMENT)
+════════════════════════════════════════════════════════════════════════════════
+
+Si vous n'avez PAS encore ajouté les fichiers, faire :
+
+git add .
+
+Vous verrez : (rien, c'est normal)
+
+Puis vérifier :
+
+git status
+
+Vous devez voir une liste de fichiers :
+- app.py
+- requirements.txt
+- data/
+- services/
+- etc.
+
+Si vous l'avez déjà fait, PASSER À L'ÉTAPE 5
+
+
+════════════════════════════════════════════════════════════════════════════════
+📋 ÉTAPE 5 : CRÉER LE COMMIT (PREMIÈRE FOIS UNIQUEMENT)
+════════════════════════════════════════════════════════════════════════════════
+
+Si vous n'avez PAS encore fait le commit, faire :
+
+git commit -m "Initial commit: AZUL AGADIR - Application touristique premium"
+
+Vous devez voir :
+[main (root-commit) abc123] Initial commit...
+ 40 files changed, ...
+
+Si vous l'avez déjà fait, PASSER À L'ÉTAPE 6
+
+
+════════════════════════════════════════════════════════════════════════════════
+🚀 ÉTAPE 6 : AJOUTER LE REMOTE GITHUB (3E COMMANDE)
+════════════════════════════════════════════════════════════════════════════════
+
+C'EST LA 1ÈRE DE VOS 3 COMMANDES !
+
+Copier-coller EXACTEMENT :
+
+git remote add origin https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git
+
+Vous devez voir : (rien, c'est normal)
+
+Vérifier que ça marche :
+
+git remote -v
+
+Vous devez voir :
+origin  https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git (fetch)
+origin  https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git (push)
+
+✅ Si c'est affiché, on continue !
+
+
+════════════════════════════════════════════════════════════════════════════════
+🚀 ÉTAPE 7 : RENOMMER LA BRANCHE (2E COMMANDE)
+════════════════════════════════════════════════════════════════════════════════
+
+C'EST LA 2E DE VOS 3 COMMANDES !
+
+Copier-coller :
+
+git branch -M main
+
+Vous devez voir : (rien, c'est normal)
+
+Vérifier :
+
+git branch
+
+Vous devez voir :
+* main
+
+✅ Si "main" apparaît, on continue !
+
+
+════════════════════════════════════════════════════════════════════════════════
+🚀 ÉTAPE 8 : POUSSER SUR GITHUB (3E COMMANDE - LA PLUS IMPORTANTE !)
+════════════════════════════════════════════════════════════════════════════════
+
+C'EST LA 3E ET DERNIÈRE DE VOS 3 COMMANDES !
+
+Copier-coller :
+
+git push -u origin main
+
+⏳ ATTENTION : Cela va demander vos identifiants GitHub :
+
+Username for 'https://github.com': hajaramazzalcontact-ui
+
+Password for 'https://hajaramazzalcontact-ui@github.com': [COLLER LE TOKEN ICI]
+
+ASTUCE : PowerShell ne montre PAS les caractères quand vous tapez le password.
+         C'est NORMAL ! Continuez juste à coller le token et appuyez sur ENTER.
+
+CE QUE VOUS DEVEZ VOIR :
+
+Enumerating objects: XX, done.
+Counting objects: 100% (XX/XX)
+Delta compression using up to 8 threads
+Compressing objects: 100% (XX/XX)
+Writing objects: 100% (XX/XX)
+...
+ * [new branch]      main -> main
+Branch 'main' set up to track remote branch 'main' from 'origin'.
+
+✅ SI VOUS VOYEZ ÇA → BRAVO ! C'EST FAIT ! 🎉
+
+
+════════════════════════════════════════════════════════════════════════════════
+✅ VÉRIFICATION FINALE
+════════════════════════════════════════════════════════════════════════════════
+
+Après le push, faire :
+
+git log
+
+Vous devez voir votre commit.
+
+Puis vérifier sur GitHub :
+
+→ Ouvrir https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR
+
+Vous DEVEZ voir :
+- Tous vos fichiers Python
+- Tous vos dossiers (data/, services/, etc.)
+- README.md et autres docs
+- SAUF : .env et *.db (c'est normal, ils sont dans .gitignore)
+
+✅ Si tout est là → SUCCÈS ! 🎉
+
+
+════════════════════════════════════════════════════════════════════════════════
+🌐 ÉTAPE 9 : STREAMLIT CLOUD (APRÈS LE PUSH)
+════════════════════════════════════════════════════════════════════════════════
+
+Maintenant que votre code est sur GitHub, déployer sur Streamlit Cloud :
+
+1. Aller sur https://streamlit.io/cloud
+
+2. Cliquer "Sign in with GitHub"
+
+3. Cliquer "Create app"
+
+4. Remplir :
+   - Repository : hajaramazzalcontact-ui/AZUL-AGADIR
+   - Branch : main
+   - Main file path : app.py
+
+5. Cliquer "Deploy"
+
+6. ⏳ Attendre 2-3 minutes
+
+7. Quand ça marche, cliquer Settings ⚙️
+
+8. Cliquer "Secrets"
+
+9. Ajouter :
+   ANTHROPIC_API_KEY = "sk-ant-votre-clé-ici"
+
+10. Cliquer "Save"
+
+11. L'app redémarre automatiquement ✓
+
+12. BRAVO ! Votre app est en ligne ! 🎉
+    https://azul-agadir.streamlit.app
+
+
+════════════════════════════════════════════════════════════════════════════════
+❌ PROBLÈMES ?
+════════════════════════════════════════════════════════════════════════════════
+
+"fatal: origin already exists"
+→ git remote remove origin
+→ Puis relancer : git remote add origin ...
+
+"Permission denied"
+→ Vous avez mal copié le token
+→ Vérifier que c'est un Personal Access Token (pas le password)
+
+"git: command not found"
+→ Git n'est pas installé
+→ Télécharger et installer : https://git-scm.com/download/win
+→ Redémarrer PowerShell
+
+".env was added"
+→ Vérifier que .env est dans .gitignore
+→ Le script devrait l'avoir fait automatiquement
+
+Autre erreur ?
+→ Copier le message d'erreur
+→ Chercher sur Google
+→ Ou relancer le script PUSH_TO_GITHUB.ps1
+
+
+════════════════════════════════════════════════════════════════════════════════
+📝 RÉSUMÉ DES 3 COMMANDES
+════════════════════════════════════════════════════════════════════════════════
+
+1️⃣  git remote add origin https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git
+
+2️⃣  git branch -M main
+
+3️⃣  git push -u origin main
+
+C'EST TOUT ! 🚀
+
+
+════════════════════════════════════════════════════════════════════════════════
+🎉 ALLEZ-Y !
+════════════════════════════════════════════════════════════════════════════════
+
+1. Ouvrir PowerShell dans azul-agadir/
+2. Exécuter les 3 commandes ci-dessus
+3. Entrer le token quand demandé
+4. Vérifier sur GitHub
+5. Aller sur Streamlit Cloud
+6. Créer l'app
+7. BRAVO ! ✨
+
+À bientôt sur https://azul-agadir.streamlit.app ! 🌊

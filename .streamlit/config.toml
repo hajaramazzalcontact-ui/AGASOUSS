@@ -1,22 +1,40 @@
+# Streamlit Configuration for AZUL AGADIR
+
 [theme]
-base = "light"
-primaryColor = "#0E6BA8"
-backgroundColor = "#FBF8F2"
+primaryColor = "#0E6BA8"          # Bleu océan
+backgroundColor = "#FBF8F2"       # Sable clair
 secondaryBackgroundColor = "#FFFFFF"
-textColor = "#1B2433"
+textColor = "#1B2433"             # Texte noir
 font = "sans serif"
-baseRadius = "large"
 
-[server]
-headless = true
-maxUploadSize = 50
-
-[browser]
-gatherUsageStats = false
+# Mode sombre personnalisé
+[theme.dark]
+primaryColor = "#14B8A6"          # Turquoise
+backgroundColor = "#0E1523"       # Bleu nuit
+secondaryBackgroundColor = "#172033"
+textColor = "#FFFFFF"
 
 [client]
-toolbarMode = "minimal"
-showErrorDetails = "full"
+showErrorDetails = true
+toolbarMode = "viewer"
+showSidebarNavigation = true
+
+[server]
+port = 8501
+headless = true
+runOnSave = true
+maxUploadSize = 200
 
 [logger]
-level = "warning"
+level = "info"
+
+[browser]
+gatherUsageStats = false          # Pas de tracking
+
+[deprecation]
+showPyplotGlobalUse = false
+
+# Cache streamlit
+[cache]
+maxEntries = 1000
+ttlSeconds = 3600

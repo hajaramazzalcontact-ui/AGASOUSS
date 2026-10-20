@@ -52,14 +52,16 @@ from .components import (
     art_svg,
     empty_state,
     esc,
-    gallery,
     hero,
     item_card,
     item_grid,
+    media_img,
     page_link,
     rating_summary,
+    render_gallery,
     review_card,
     section_head,
+    show_html,
     stars,
     vibe_tiles,
 )
@@ -143,10 +145,7 @@ def render_home(locale: str) -> None:
         ), unsafe_allow_html=True)
         favorites = _weekly_favorites(s, 6)
         if favorites:
-            st.markdown(
-                '<div class="az-grid">' + "".join(item_card(i, locale) for i in favorites) + "</div>",
-                unsafe_allow_html=True,
-            )
+            show_html('<div class="az-grid">' + "".join(item_card(i, locale) for i in favorites) + "</div>")
         else:
             empty_state("✦", t("no_results", locale))
 
@@ -160,14 +159,14 @@ def render_home(locale: str) -> None:
             cols_html = "".join(
                 f'<div>{review_card(r, locale, show_item=True)}</div>' for r in reviews[:6]
             )
-            st.markdown(f'<div class="az-grid">{cols_html}</div>', unsafe_allow_html=True)
+            show_html(f'<div class="az-grid">{cols_html}</div>')
 
         st.markdown(section_head(
             "Votre séjour", "Un programme qui respire",
             "Durée, budget, envies et météo : Azul assemble les jours et prévoit un plan B.",
             t("plan", locale), page_link("itinerary"),
         ), unsafe_allow_html=True)
-        st.markdown(f"""
+        show_html(f"""
         <div class="az-detail-copy" style="display:grid;grid-template-columns:1.3fr .7fr;gap:18px;align-items:center">
           <div>
             <span class="az-kicker">Planificateur Azul</span>
@@ -176,11 +175,11 @@ def render_home(locale: str) -> None:
               Un exemple de programme de démonstration. Aucun prix, horaire ou disponibilité
               n'est inventé : ce qui manque est marqué « à confirmer ».
             </p>
-            <a class="az-btn primary" href="{page_link('itinerary')}">Composer mon séjour →</a>
+            <a target="_self" class="az-btn primary" href="{page_link('itinerary')}">Composer mon séjour →</a>
           </div>
           <div style="border-radius:22px;overflow:hidden;min-height:220px">{art_svg(type('X', (), {'kind':'spot','id':7})(), 1, tall=True)}</div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         st.markdown(f"""
         <div class="az-trust">
@@ -232,7 +231,7 @@ def _render_activity_booking(s, item, locale: str) -> None:
 def _render_activity_detail(s, item, locale: str) -> None:
     detail = detail_for(s, item)
     back_link("decouvrir", "Retour au catalogue")
-    st.markdown(f'<div class="az-gallery">{gallery(item, locale)}</div>', unsafe_allow_html=True)
+    show_html(render_gallery(item, locale))
     rating_line = f'<span class="az-stars">{stars(item.rating_avg)}</span> <b>{item.rating_avg or 0:.1f}</b> · {item.review_count or 0} {t("reviews", locale)}'
     facts = [
         ("Durée", f"{detail.duration_minutes} min" if detail and detail.duration_minutes else "À confirmer"),
@@ -243,9 +242,9 @@ def _render_activity_detail(s, item, locale: str) -> None:
         ("Effort", (detail.effort_level or "À confirmer").title() if detail else "À confirmer"),
     ]
     facts_html = "".join(f'<div class="az-fact"><span>{esc(k)}</span><b>{esc(v)}</b></div>' for k, v in facts)
-    st.markdown(f"""
+    show_html(f"""
     <div class="az-detail-hero">
-      <div class="az-detail-art">{art_svg(item, 1, tall=True)}</div>
+      <div class="az-detail-art">{art_svg(item, 1, tall=True)}{media_img(item, 0)}</div>
       <div class="az-detail-copy">
         <div class="az-chip-row"><span class="az-badge demo">DÉMO</span><span class="az-badge verified">✓ Avis vérifiés</span></div>
         <div class="az-card-kind">{esc(localized(kind_label(item.kind, locale), locale))} · {esc(item.zone or item.district or 'Agadir')}</div>
@@ -256,7 +255,7 @@ def _render_activity_detail(s, item, locale: str) -> None:
         {facts_html}
       </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
     st.markdown(f'<div class="az-prose">{esc(localized(item.long_description, locale))}</div>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
@@ -278,7 +277,7 @@ def _render_activity_detail(s, item, locale: str) -> None:
     related = cross_sell(s, item, 3)
     if related:
         st.markdown(section_head("Après l'activité", "À combiner avec Azul"), unsafe_allow_html=True)
-        st.markdown('<div class="az-grid">' + "".join(item_card(i, locale) for i in related) + "</div>", unsafe_allow_html=True)
+        show_html('<div class="az-grid">' + "".join(item_card(i, locale) for i in related) + "</div>")
 
 
 def render_discover(locale: str) -> None:
@@ -348,10 +347,10 @@ def render_discover(locale: str) -> None:
             results.sort(key=lambda x: ((x.rating_avg or 0) * 1.2) + (2 if "culture" in (x.vibes or []) else 0), reverse=True)
         st.markdown(f"**{len(results)} expérience(s)** · prix et horaires de démonstration")
         if results:
-            st.markdown('<div class="az-grid">' + "".join(item_card(i, locale) for i in results) + "</div>", unsafe_allow_html=True)
+            show_html('<div class="az-grid">' + "".join(item_card(i, locale) for i in results) + "</div>")
         else:
             empty_state("✦", t("no_results", locale), "Élargissez le budget, la distance ou choisissez une autre ambiance.")
-        st.markdown(f'<div style="margin-top:26px"><a class="az-chip" href="{page_link("carte")}">Voir tout sur la carte →</a></div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="margin-top:26px"><a target="_self" class="az-chip" href="{page_link("carte")}">Voir tout sur la carte →</a></div>', unsafe_allow_html=True)
     finally:
         s.close()
 
@@ -396,7 +395,7 @@ def render_restaurants(locale: str) -> None:
         filtered.sort(key=lambda x: (x.rating_avg or 0), reverse=True)
         st.markdown(f"**{len(filtered)} table(s)** · horaires et prix de démonstration")
         if filtered:
-            st.markdown('<div class="az-grid">' + "".join(item_card(i, locale) for i in filtered) + "</div>", unsafe_allow_html=True)
+            show_html('<div class="az-grid">' + "".join(item_card(i, locale) for i in filtered) + "</div>")
         else:
             empty_state("◌", t("no_results", locale))
     finally:
@@ -406,7 +405,7 @@ def render_restaurants(locale: str) -> None:
 def _render_restaurant_detail(s, item, locale: str) -> None:
     detail = detail_for(s, item)
     back_link("restaurants", "Retour aux restaurants")
-    st.markdown(f'<div class="az-gallery">{gallery(item, locale)}</div>', unsafe_allow_html=True)
+    show_html(render_gallery(item, locale))
     facts = [
         ("Quartier", item.district or "—"),
         ("Cuisines", " · ".join(detail.cuisines or []) if detail else "—"),
@@ -415,9 +414,9 @@ def _render_restaurant_detail(s, item, locale: str) -> None:
         ("Options", " · ".join(detail.options or []) if detail else "—"),
         ("Distance", f"{item.distance_center_km:.0f} km" if item.distance_center_km is not None else "—"),
     ]
-    st.markdown(f"""
+    show_html(f"""
     <div class="az-detail-hero">
-      <div class="az-detail-art">{art_svg(item, 0, tall=True)}</div>
+      <div class="az-detail-art">{art_svg(item, 0, tall=True)}{media_img(item, 0)}</div>
       <div class="az-detail-copy">
         <div class="az-chip-row"><span class="az-badge demo">DÉMO</span><span class="az-badge verified">✓ Avis vérifiés</span></div>
         <div class="az-card-kind">Restaurant · {esc(item.district or 'Agadir')}</div>
@@ -428,7 +427,7 @@ def _render_restaurant_detail(s, item, locale: str) -> None:
         <div class="az-facts">{"".join(f'<div class="az-fact"><span>{esc(k)}</span><b>{esc(v)}</b></div>' for k,v in facts)}</div>
       </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
     st.markdown(f'<div class="az-prose">{esc(localized(item.long_description, locale))}</div>', unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
@@ -519,7 +518,7 @@ def render_accommodations(locale: str) -> None:
             filtered.append(item)
         filtered.sort(key=lambda x: (x.rating_avg or 0), reverse=True)
         st.markdown(f"**{len(filtered)} hébergement(s)** · tarifs de démonstration à confirmer")
-        st.markdown('<div class="az-grid">' + "".join(item_card(i, locale) for i in filtered) + "</div>", unsafe_allow_html=True)
+        show_html('<div class="az-grid">' + "".join(item_card(i, locale) for i in filtered) + "</div>")
     finally:
         s.close()
 
@@ -527,16 +526,16 @@ def render_accommodations(locale: str) -> None:
 def _render_accommodation_detail(s, item, locale: str) -> None:
     detail = detail_for(s, item)
     back_link("hebergements", "Retour aux hébergements")
-    st.markdown(f'<div class="az-gallery">{gallery(item, locale)}</div>', unsafe_allow_html=True)
+    show_html(render_gallery(item, locale))
     facts = [
         ("Zone", item.zone or "—"), ("Type", detail.accommodation_type if detail else "—"),
         ("Gamme", detail.price_band if detail else "—"), ("Capacité", f"{item.capacity or '—'} personnes"),
         ("Arrivée", detail.checkin_time if detail else "À confirmer"),
         ("Départ", detail.checkout_time if detail else "À confirmer"),
     ]
-    st.markdown(f"""
+    show_html(f"""
     <div class="az-detail-hero">
-      <div class="az-detail-art">{art_svg(item, 1, tall=True)}</div>
+      <div class="az-detail-art">{art_svg(item, 1, tall=True)}{media_img(item, 0)}</div>
       <div class="az-detail-copy">
         <div class="az-chip-row"><span class="az-badge demo">DÉMO</span><span class="az-badge verified">✓ Avis vérifiés</span></div>
         <div class="az-card-kind">Hébergement · {esc(item.zone or 'Agadir')}</div>
@@ -547,7 +546,7 @@ def _render_accommodation_detail(s, item, locale: str) -> None:
         <div class="az-facts">{"".join(f'<div class="az-fact"><span>{esc(k)}</span><b>{esc(v)}</b></div>' for k,v in facts)}</div>
       </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
     st.markdown(f'<div class="az-prose">{esc(localized(item.long_description, locale))}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="az-note"><b>Services</b><br>{esc(" · ".join(detail.amenities or [])) if detail else "À confirmer"}</div>', unsafe_allow_html=True)
 
@@ -626,7 +625,7 @@ def render_transport(locale: str) -> None:
                 continue
             filtered.append(item)
         st.markdown(f"**{len(filtered)} service(s)** · prix et horaires de démonstration")
-        st.markdown('<div class="az-grid">' + "".join(item_card(i, locale) for i in filtered) + "</div>", unsafe_allow_html=True)
+        show_html('<div class="az-grid">' + "".join(item_card(i, locale) for i in filtered) + "</div>")
     finally:
         s.close()
 
@@ -634,7 +633,7 @@ def render_transport(locale: str) -> None:
 def _render_transport_detail(s, item, locale: str) -> None:
     detail = detail_for(s, item)
     back_link("transport", "Retour au transport")
-    st.markdown(f'<div class="az-gallery">{gallery(item, locale)}</div>', unsafe_allow_html=True)
+    show_html(render_gallery(item, locale))
     facts = [
         ("Départ", detail.origin if detail else "—"),
         ("Arrivée", detail.destination if detail else "—"),
@@ -643,9 +642,9 @@ def _render_transport_detail(s, item, locale: str) -> None:
         ("Bagages", detail.luggage if detail else "À confirmer"),
         ("Langues", " · ".join((detail.driver_languages or []) if detail else []).upper() or "À confirmer"),
     ]
-    st.markdown(f"""
+    show_html(f"""
     <div class="az-detail-hero">
-      <div class="az-detail-art">{art_svg(item, 1, tall=True)}</div>
+      <div class="az-detail-art">{art_svg(item, 1, tall=True)}{media_img(item, 0)}</div>
       <div class="az-detail-copy">
         <div class="az-chip-row"><span class="az-badge demo">DÉMO</span><span class="az-badge verified">✓ Prestataire vérifié</span></div>
         <div class="az-card-kind">Transport · {esc(detail.mode if detail else 'service')}</div>
@@ -655,7 +654,7 @@ def _render_transport_detail(s, item, locale: str) -> None:
         <div class="az-facts">{"".join(f'<div class="az-fact"><span>{esc(k)}</span><b>{esc(v)}</b></div>' for k,v in facts)}</div>
       </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
     st.markdown(f'<div class="az-prose">{esc(localized(item.long_description, locale))}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="az-note"><b>Annulation</b><br>{esc(localized(detail.cancellation_policy, locale) if detail else "Conditions à confirmer")}</div>', unsafe_allow_html=True)
 

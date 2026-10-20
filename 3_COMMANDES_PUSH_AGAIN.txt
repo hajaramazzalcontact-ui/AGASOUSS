@@ -1,0 +1,135 @@
+════════════════════════════════════════════════════════════════════════════════
+🚀 SI VOUS PRÉFÉREZ LES COMMANDES MANUELLES
+════════════════════════════════════════════════════════════════════════════════
+
+Au lieu d'utiliser le script REPOUSSER_GITHUB.ps1, vous pouvez faire les
+commandes manuellement une par une.
+
+
+════════════════════════════════════════════════════════════════════════════════
+PRÉALABLE : Ouvrir PowerShell
+════════════════════════════════════════════════════════════════════════════════
+
+Naviguer à : C:\Users\vams\Documents\Projet par défaut\azul-agadir
+
+Clic DROIT → "Open PowerShell here"
+
+
+════════════════════════════════════════════════════════════════════════════════
+COMMANDE 1 : Ajouter les fichiers
+════════════════════════════════════════════════════════════════════════════════
+
+Copier-coller :
+
+git add .
+
+Appuyer sur ENTER
+
+
+════════════════════════════════════════════════════════════════════════════════
+COMMANDE 2 : Créer un commit
+════════════════════════════════════════════════════════════════════════════════
+
+Copier-coller :
+
+git commit -m "Fix: Re-push all files to GitHub"
+
+Appuyer sur ENTER
+
+(Si rien ne change, c'est normal, il n'y a peut-être rien à commiter)
+
+
+════════════════════════════════════════════════════════════════════════════════
+COMMANDE 3 : POUSSER VERS GITHUB (LA PLUS IMPORTANTE)
+════════════════════════════════════════════════════════════════════════════════
+
+Copier-coller :
+
+git push -u origin main --force
+
+Appuyer sur ENTER
+
+⏳ Attendre... (peut prendre 30 secondes)
+
+🔐 PowerShell demandera :
+
+Username for 'https://github.com': hajaramazzalcontact-ui
+
+Password for 'https://hajaramazzalcontact-ui@github.com': [COLLER LE TOKEN]
+
+Les caractères ne s'affichent pas, c'est NORMAL.
+
+Appuyer sur ENTER quand vous avez collé le token.
+
+
+════════════════════════════════════════════════════════════════════════════════
+✅ RÉSULTAT ATTENDU
+════════════════════════════════════════════════════════════════════════════════
+
+Vous devez voir :
+
+Enumerating objects: XX, done.
+Counting objects: 100% (XX/XX)
+Delta compression using up to 8 threads
+Compressing objects: 100% (XX/XX)
+Writing objects: 100% (XX/XX)
+remote: Resolving deltas: 100% (XX/XX), done.
+To https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR.git
+ * [new branch]      main -> main
+Branch 'main' set up to track remote branch 'main' from 'origin'.
+
+✅ LES FICHIERS SONT POUSSÉS ! 🎉
+
+
+════════════════════════════════════════════════════════════════════════════════
+🌐 VÉRIFIER SUR GITHUB
+════════════════════════════════════════════════════════════════════════════════
+
+Ouvrir : https://github.com/hajaramazzalcontact-ui/AZUL-AGADIR
+
+Vous devez voir :
+✅ Branch "main" en haut
+✅ Fichier "app.py"
+✅ Fichier "requirements.txt"
+✅ Dossiers "data/", "services/", etc.
+✅ Tous vos fichiers ! 🎉
+
+
+════════════════════════════════════════════════════════════════════════════════
+🚀 APRÈS : RETOURNER À STREAMLIT CLOUD
+════════════════════════════════════════════════════════════════════════════════
+
+1. Aller sur https://streamlit.io/cloud
+
+2. Cliquer sur votre app AZUL AGADIR
+
+3. Cliquer les 3 points ⋮ → "Reboot app"
+
+4. OU cliquer "Deploy" (si disponible)
+
+5. ⏳ Attendre 2-3 minutes
+
+6. ✅ App devrait démarrer ! 🌊
+
+
+════════════════════════════════════════════════════════════════════════════════
+💡 RÉSUMÉ DES 3 COMMANDES
+════════════════════════════════════════════════════════════════════════════════
+
+1️⃣  git add .
+
+2️⃣  git commit -m "Fix: Re-push all files to GitHub"
+
+3️⃣  git push -u origin main --force
+
+C'est TOUT ! 🎉
+
+
+════════════════════════════════════════════════════════════════════════════════
+🎯 C'EST SIMPLE
+════════════════════════════════════════════════════════════════════════════════
+
+1. 3 commandes
+2. 2 minutes
+3. Fichiers sur GitHub
+4. App en ligne !

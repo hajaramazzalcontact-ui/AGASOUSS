@@ -131,7 +131,7 @@ def add_to_cart_and_go(s, item, *, variant_id=None, slot_id=None, item_type=None
 
 def back_link(page: str, label: str) -> None:
     st.markdown(
-        f'<div style="margin:6px 0 14px 0"><a class="az-chip" href="{page_link(page)}">← {esc(label)}</a></div>',
+        f'<div style="margin:6px 0 14px 0"><a target="_self" class="az-chip" href="{page_link(page)}">← {esc(label)}</a></div>',
         unsafe_allow_html=True,
     )
 

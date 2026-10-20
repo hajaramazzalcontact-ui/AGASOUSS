@@ -7,6 +7,9 @@ partageable par un lien.
 """
 from __future__ import annotations
 
+import logging
+import os
+
 from collections.abc import Callable
 
 import streamlit as st
@@ -36,6 +39,8 @@ from src.ui.pages_journey import (
     render_reviews,
 )
 from src.ui.pages_admin import render_admin
+
+LOG = logging.getLogger(__name__)
 
 # Pages visiteurs : clé d'URL -> (libellé, fonction de rendu).
 VISITOR_PAGES: dict[str, tuple[str, Callable]] = {
@@ -82,6 +87,21 @@ def _setup_database() -> None:
     """
     configure_database()
     init_database()
+    # Photos réelles (Wikimedia Commons, licences libres) : manifeste
+    # d'abord (instantané, hors ligne), récolte réseau brève ensuite pour
+    # les fiches encore sans photo. Idempotent ; désactivable via
+    # AZUL_SKIP_STARTUP_PHOTOS=1.
+    if IS_DEMO and os.getenv("AZUL_SKIP_STARTUP_PHOTOS", "").strip().lower() not in {"1", "true", "yes"}:
+        try:
+            from src.services.photos import apply_real_photos
+
+            session = get_session()
+            try:
+                apply_real_photos(session, max_media_per_item=6, budget_seconds=60.0)
+            finally:
+                session.close()
+        except Exception as exc:  # hors ligne : les visuels SVG prennent le relais
+            LOG.warning("Pipeline photos ignorée (%s)", exc)
 
 
 def _cart_count() -> int:
