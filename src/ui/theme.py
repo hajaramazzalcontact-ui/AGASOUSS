@@ -405,19 +405,20 @@ html[dir="rtl"] .az-price, html[dir="rtl"] .az-card-kind { direction: ltr; }
 
 
 def inject_theme(dark: bool = False, rtl: bool = False) -> None:
+    """Injecte le thème en UN seul bloc HTML.
+
+    Un seul bloc <style> par exécution limite les noeuds DOM remplacés à
+    chaque rerun : plusieurs blocs séparés provoquent des erreurs React
+    « removeChild » sur certains navigateurs.
+    """
     theme = "dark" if dark else "light"
-    st.markdown(
-        f"""<style>
-        html {{ --azul-mode: {theme}; }}
-        {BASE_CSS}
-        </style>""",
-        unsafe_allow_html=True,
-    )
+    parts = [f"html {{ --azul-mode: {theme}; }}", BASE_CSS]
+
     # Streamlit n'exécute pas les scripts intégrés : le thème et la direction
     # sont appliqués uniquement en CSS, sans attribut posé par script.
     if dark:
-        st.markdown(
-            """<style>
+        parts.append(
+            """
             :root {
               --azul-bg: #0E1523; --azul-surface: #172033; --azul-surface-2: #1D2940;
               --azul-ink: #E8EEF8; --azul-night: #F5F8FD; --azul-muted: #A6B2C8;
@@ -425,17 +426,17 @@ def inject_theme(dark: bool = False, rtl: bool = False) -> None:
               --azul-shadow: 0 16px 48px rgba(0,0,0,.35); --azul-shadow-soft: 0 8px 24px rgba(0,0,0,.25);
             }
             .stApp { background: radial-gradient(circle at 8% 4%, rgba(20,184,166,.07), transparent 28rem), var(--azul-bg); }
-            </style>""",
-            unsafe_allow_html=True,
+            """
         )
     if rtl:
-        st.markdown(
-            """<style>
+        parts.append(
+            """
             html, body, .stApp { direction: rtl; }
             .az-topbar, .az-nav, .az-utility { direction: rtl; }
             .az-hero-copy, .az-card-body, .az-detail-copy, .az-review,
             .az-note, .az-day, .az-day-head, .az-section-head { text-align: right; }
             .az-price, .az-card-kind { direction: ltr; }
-            </style>""",
-            unsafe_allow_html=True,
+            """
         )
+
+    st.markdown(f"<style>{''.join(parts)}</style>", unsafe_allow_html=True)

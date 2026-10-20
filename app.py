@@ -227,8 +227,6 @@ def main() -> None:
     _setup_database()
 
     locale = st.session_state.get("lang", "fr")
-
-    locale = st.session_state.get("lang", "fr")
     rtl = direction(locale) == "rtl"
     inject_theme(dark=bool(st.session_state.get("dark_mode")), rtl=rtl)
 
@@ -238,9 +236,10 @@ def main() -> None:
 
     page = st.query_params.get("page", "accueil")
     if page != "admin" and page not in VISITOR_PAGES:
+        # La modification des query params déclenche déjà un rerun : inutile
+        # d'en ajouter un second (source de clignotements et d'erreurs DOM).
         st.query_params["page"] = "accueil"
-        st.rerun()
-        return
+        page = "accueil"
 
     if page == "admin":
         render_admin(locale)
