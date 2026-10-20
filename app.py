@@ -62,7 +62,6 @@ VISITOR_PAGES: dict[str, tuple[str, Callable]] = {
 def _init_session() -> None:
     """Valeurs par défaut de la session Streamlit."""
     defaults = {
-        "lang": "fr",
         "dark_mode": False,
         "customer_id": None,
         "cart_token": None,
@@ -75,6 +74,9 @@ def _init_session() -> None:
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
+    if "lang" not in st.session_state:
+        requested = st.query_params.get("lang", "fr")
+        st.session_state["lang"] = requested if requested in LANGUAGES else "fr"
 
 
 @st.cache_resource(show_spinner="Préparation de la base…")
@@ -230,15 +232,11 @@ def main() -> None:
     rtl = direction(locale) == "rtl"
     inject_theme(dark=bool(st.session_state.get("dark_mode")), rtl=rtl)
 
-    # La langue reste lisible dans l'URL pour un partage simple.
-    if st.query_params.get("lang") != locale:
-        st.query_params["lang"] = locale
-
+    # Aucune écriture dans les query params au démarrage : cela déclenchait
+    # un second rendu immédiat, source d'erreurs DOM « removeChild ».
+    # Les paramètres ne sont écrits que sur action de l'utilisateur.
     page = st.query_params.get("page", "accueil")
     if page != "admin" and page not in VISITOR_PAGES:
-        # La modification des query params déclenche déjà un rerun : inutile
-        # d'en ajouter un second (source de clignotements et d'erreurs DOM).
-        st.query_params["page"] = "accueil"
         page = "accueil"
 
     if page == "admin":
