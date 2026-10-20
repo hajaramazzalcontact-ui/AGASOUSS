@@ -21,16 +21,32 @@ ASSETS_DIR = BASE_DIR / "assets"
 for _d in (DATA_DIR, UPLOAD_DIR, BACKUP_DIR):
     _d.mkdir(parents=True, exist_ok=True)
 
-MODE = os.getenv("AZUL_MODE", "demo").strip().lower()
+def setting(name: str, default: str = "") -> str:
+    """Lit un réglage depuis st.secrets (Cloud) puis l'environnement.
+
+    Sur Streamlit Community Cloud, les secrets saisis dans l'interface sont
+    exposés via st.secrets. En local, ils viennent du fichier .env.
+    """
+    try:
+        import streamlit as st
+
+        if name in st.secrets:
+            return str(st.secrets[name]).strip()
+    except Exception:
+        pass
+    return os.getenv(name, default).strip()
+
+
+MODE = setting("AZUL_MODE", "demo").lower()
 IS_DEMO = MODE != "production"
 DB_PATH = DATA_DIR / ("azul_demo.db" if IS_DEMO else "azul.db")
-DATABASE_URL = os.getenv("AZUL_DATABASE_URL", f"sqlite:///{DB_PATH.as_posix()}")
+DATABASE_URL = setting("AZUL_DATABASE_URL", f"sqlite:///{DB_PATH.as_posix()}")
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
-ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6").strip()
+ANTHROPIC_API_KEY = setting("ANTHROPIC_API_KEY")
+ANTHROPIC_MODEL = setting("ANTHROPIC_MODEL", "claude-sonnet-4-5")
 
-ADMIN_EMAIL = os.getenv("AZUL_ADMIN_EMAIL", "admin@azul.local").strip().lower()
-ADMIN_PASSWORD = os.getenv("AZUL_ADMIN_PASSWORD", "AzulDemo2026!")
+ADMIN_EMAIL = setting("AZUL_ADMIN_EMAIL", "admin@azul.local").lower()
+ADMIN_PASSWORD = setting("AZUL_ADMIN_PASSWORD", "AzulDemo2026!")
 
 APP_NAME = "AZUL AGADIR"
 APP_EDITOR = "AgadirGO"
@@ -55,7 +71,7 @@ def ensure_fernet_key() -> bytes:
     """
     from cryptography.fernet import Fernet
 
-    env_key = os.getenv("AZUL_FERNET_KEY", "").strip()
+    env_key = setting("AZUL_FERNET_KEY")
     if env_key:
         return env_key.encode("utf-8")
 

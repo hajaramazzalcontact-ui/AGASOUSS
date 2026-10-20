@@ -20,7 +20,6 @@ toolbarMode = "viewer"
 showSidebarNavigation = true
 
 [server]
-port = 8501
 headless = true
 runOnSave = true
 maxUploadSize = 200
